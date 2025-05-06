@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thenux-Q | O/L Question Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            color: white;
+            padding: 20px 0;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s infinite linear;
+        }
+
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .subject-filter {
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-group h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .filter-group h3 i {
+            transition: var(--transition);
+        }
+
+        .filter-group.active h3 i {
+            transform: rotate(180deg);
+        }
+
+        .filter-options {
+            display: none;
+            padding-left: 15px;
+        }
+
+        .filter-group.active .filter-options {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-option {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-option input {
+            cursor: pointer;
+        }
+
+        .filter-option label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .filter-option label:hover {
+            color: var(--primary);
+        }
+
+        .question-panel {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .question-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+        }
+
+        .generate-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .generate-btn:hover {
+            background-color: #3a5bef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option:hover {
+            background-color: #e9ecef;
+        }
+
+        .option.selected {
+            background-color: rgba(74, 107, 255, 0.1);
+            border: 1px solid var(--primary);
+        }
+
+        .option.correct {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--success);
+        }
+
+        .option.incorrect {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--danger);
+        }
+
+        .option-letter {
+            width: 25px;
+            height: 25px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .option.selected .option-letter {
+            background-color: var(--primary);
+        }
+
+        .option.correct .option-letter {
+            background-color: var(--success);
+        }
+
+        .option.incorrect .option-letter {
+            background-color: var(--danger);
+        }
+
+        .answer-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+            display: none;
+        }
+
+        .answer-section.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .answer-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--success);
+        }
+
+        .answer-text {
+            font-size: 0.95rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5bef;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(74, 107, 255, 0.1);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 15px;
+            border-radius: var(--border-radius);
+            z-index: 10;
+            display: none;
+        }
+
+        .loading.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .no-questions {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--secondary);
+        }
+
+        .no-questions i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .no-questions p {
+            font-size: 1.1rem;
+        }
+
+        .history-panel {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .history-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background-color: var(--danger);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-question-circle"></i>
+                <h1>Thenux-Q</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-book"></i> Subjects</a>
+                <a href="#"><i class="fas fa-history"></i> History</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="subject-filter">
+                    <h2>Question Generator</h2>
+                    
+                    <div class="filter-group active">
+                        <h3>
+                            <span>Subject</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </h3>
+                        <div class="filter-options">
+                            <div class="filter-option">
+                                <input type="radio" id="subject-ict" name="subject" value="ICT sinhala" checked>
+                                <label for="subject-ict">ICT (සිංහල)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-science" name="subject" value="Science sinhala">
+                                <label for="subject-science">Science (සිංහල)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-maths" name="subject" value="Mathematics sinhala">
+                                <label for="subject-maths">Mathematics (සිංහල)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-history" name="subject" value="History sinhala">
+                                <label for="subject-history">History (සිංහල)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-sinhala" name="subject" value="Sinhala">
+                                <label for="subject-sinhala">Sinhala</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-english" name="subject" value="English">
+                                <label for="subject-english">English</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-buddhism" name="subject" value="Buddhism sinhala">
+                                <label for="subject-buddhism">Buddhism (සිංහල)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="subject-geography" name="subject" value="Geography sinhala">
+                                <label for="subject-geography">Geography (සිංහල)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group active">
+                        <h3>
+                            <span>Question Type</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </h3>
+                        <div class="filter-options">
+                            <div class="filter-option">
+                                <input type="radio" id="type-mcq" name="type" value="MCQ" checked>
+                                <label for="type-mcq">Multiple Choice (MCQ)</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="type-tf" name="type" value="TrueFalse">
+                                <label for="type-tf">True/False</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="type-short" name="type" value="ShortAnswer">
+                                <label for="type-short">Short Answer</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="type-essay" name="type" value="Essay">
+                                <label for="type-essay">Essay</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h3>
+                            <span>Difficulty</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </h3>
+                        <div class="filter-options">
+                            <div class="filter-option">
+                                <input type="radio" id="difficulty-easy" name="difficulty" value="Easy" checked>
+                                <label for="difficulty-easy">Easy</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="difficulty-medium" name="difficulty" value="Medium">
+                                <label for="difficulty-medium">Medium</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="radio" id="difficulty-hard" name="difficulty" value="Hard">
+                                <label for="difficulty-hard">Hard</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h3>
+                            <span>Advanced Options</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </h3>
+                        <div class="filter-options">
+                            <div class="filter-option">
+                                <input type="checkbox" id="option-explanations" checked>
+                                <label for="option-explanations">Include Explanations</label>
+                            </div>
+                            <div class="filter-option">
+                                <input type="checkbox" id="option-formatting" checked>
+                                <label for="option-formatting">Format Text</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history-panel">
+                    <h2>Recent Questions</h2>
+                    <div class="history-items">
+                        <div class="history-item">ICT - මෘදුකාංග සහ දෘඪාංග</div>
+                        <div class="history-item">Science - පරිණාමික ක්රියාවලිය</div>
+                        <div class="history-item">Mathematics - ත්රිකෝණමිතිය</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-panel">
+                <div class="question-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search questions...">
+                    </div>
+                    <button class="generate-btn" id="generateBtn">
+                        <i class="fas fa-magic"></i>
+                        Generate Question
+                    </button>
+                </div>
+                
+                <div class="question-container" id="questionContainer">
+                    <div class="no-questions">
+                        <i class="fas fa-question"></i>
+                        <p>No questions generated yet. Click the "Generate Question" button to get started!</p>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Generating your question...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toastNotification">
+        <i class="fas fa-check-circle"></i>
+        <span>Question generated successfully!</span>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 Thenux-Q - O/L Question Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle filter groups
+            const filterGroups = document.querySelectorAll('.filter-group h3');
+            filterGroups.forEach(group => {
+                group.addEventListener('click', () => {
+                    const parent = group.parentElement;
+                    parent.classList.toggle('active');
+                });
+            });
+            
+            // Generate question button
+            const generateBtn = document.getElementById('generateBtn');
+            const questionContainer = document.getElementById('questionContainer');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const toastNotification = document.getElementById('toastNotification');
+            
+            generateBtn.addEventListener('click', generateQuestion);
+            
+            // Option selection
+            questionContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.option')) {
+                    const option = e.target.closest('.option');
+                    const options = document.querySelectorAll('.option');
+                    
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    // Show answer section
+                    const answerSection = document.querySelector('.answer-section');
+                    if (answerSection) {
+                        answerSection.classList.add('show');
+                    }
+                }
+            });
+            
+            async function generateQuestion() {
+                // Show loading indicator
+                loadingIndicator.classList.add('show');
+                questionContainer.innerHTML = '';
+                
+                // Get selected filters
+                const subject = document.querySelector('input[name="subject"]:checked').value;
+                const type = document.querySelector('input[name="type"]:checked').value;
+                const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+                
+                try {
+                    // Call API
+                    const apiUrl = `https://thenux-q-api.vercel.app/generate-question?topic=${encodeURIComponent(subject)}&type=${encodeURIComponent(type)}`;
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Hide loading indicator
+                    loadingIndicator.classList.remove('show');
+                    
+                    // Display question
+                    displayQuestion(data);
+                    
+                    // Show success toast
+                    showToast('Question generated successfully!');
+                    
+                } catch (error) {
+                    console.error('Error generating question:', error);
+                    loadingIndicator.classList.remove('show');
+                    showToast('Error generating question. Please try again.', true);
+                }
+            }
+            
+            function displayQuestion(data) {
+                const questionHtml = `
+                    <div class="question-text">${data.question}</div>
+                    <div class="options-container">
+                        ${data.options.map((option, index) => `
+                            <div class="option" data-option="${String.fromCharCode(65 + index)}">
+                                <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                                <div class="option-text">${option}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="answer-section">
+                        <div class="answer-title">Correct Answer:</div>
+                        <div class="answer-text">${data.answer}</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-redo"></i> Regenerate
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                `;
+                
+                questionContainer.innerHTML = questionHtml;
+            }
+            
+            function showToast(message, isError = false) {
+                const toast = toastNotification;
+                const icon = toast.querySelector('i');
+                const text = toast.querySelector('span');
+                
+                text.textContent = message;
+                
+                if (isError) {
+                    toast.classList.add('error');
+                    icon.className = 'fas fa-exclamation-circle';
+                } else {
+                    toast.classList.remove('error');
+                    icon.className = 'fas fa-check-circle';
+                }
+                
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Tooltip initialization
+            const tooltipElements = document.querySelectorAll('.tooltip');
+            tooltipElements.forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    this.querySelector('.tooltiptext').style.visibility = 'visible';
+                    this.querySelector('.tooltiptext').style.opacity = '1';
+                });
+                el.addEventListener('mouseleave', function() {
+                    this.querySelector('.tooltiptext').style.visibility = 'hidden';
+                    this.querySelector('.tooltiptext').style.opacity = '0';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
